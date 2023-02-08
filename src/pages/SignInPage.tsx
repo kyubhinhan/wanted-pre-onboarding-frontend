@@ -50,11 +50,15 @@ const SignInPage = () => {
         password: passwordValue,
       })
       .then(({ data }) => {
-        console.log(data);
+        localStorage.setItem('access_token', data['access_token']);
         navigate('/todo');
       })
       .catch((err) => {
-        window.alert(err.response.data.message);
+        if (err.response.data.message === 'Unauthorized') {
+          window.alert('password가 일치하지 않습니다.');
+        } else {
+          window.alert(err.response.data.message);
+        }
       });
   };
 
