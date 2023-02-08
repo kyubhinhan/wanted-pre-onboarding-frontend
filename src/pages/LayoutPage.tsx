@@ -27,17 +27,26 @@ const GlobalStyle = createGlobalStyle`
     line-height: 1.5;
     font-size: 16px;
   }
+
+  :root{
+    --color-purple100:#C3ACD0;
+    --color-purple200:#674188;
+    --color-grey100:#FFFBF5;
+    --color-grey200:#F7EFE5;
+    --font-size-large: 20px;
+  }
 `;
 
 const Container = styled.div`
   min-width: 500px;
   header {
-    font-size: 20px;
+    font-size: var(--font-size-large);
     font-weight: 600;
     padding: 0.5rem 1rem;
-    background-color: #d3d3d3;
+    background-color: var(--color-purple200);
     display: flex;
     justify-content: center;
+    color: var(--color-grey100);
   }
 `;
 
