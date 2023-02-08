@@ -70,6 +70,13 @@ const SignInPage = () => {
     }
   }, [emailValue, passwordValue]);
 
+  // access token이 있을 경우 todo로 redirect 시켜줌
+  useEffect(() => {
+    if (localStorage.getItem('access_token')) {
+      navigate('/todo');
+    }
+  }, []);
+
   return (
     <Container>
       <form className="signin-container" onSubmit={handleSubmit}>
