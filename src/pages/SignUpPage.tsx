@@ -123,12 +123,6 @@ const Container = styled.div`
     align-items: center;
     flex-direction: column;
     position: relative;
-    h1 {
-      font-size: var(--font-size-large);
-      font-weight: 600;
-      padding: 1rem 0;
-      color: var(--color-purple200);
-    }
   }
   section {
     height: 80px;
