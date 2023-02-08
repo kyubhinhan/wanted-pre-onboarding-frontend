@@ -22,4 +22,23 @@ customAxios.interceptors.request.use(
   },
 );
 
+//response를 가로채, access_token이 없거나 이상한 값일 때
+//signin으로 redirect 시켜줌
+customAxios.interceptors.response.use(
+  (res) => {
+    return res;
+  },
+  async (err) => {
+    if (err.response) {
+      // access token이 이상할 때,
+      if (err.response.status === 401) {
+        // 토큰값 초기화
+        localStorage.setItem('access_token', '');
+        // 로그인 페이지로 redirect
+        window.location.href = '/signin';
+      }
+    }
+  },
+);
+
 export default customAxios;
