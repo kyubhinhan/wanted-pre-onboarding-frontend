@@ -171,7 +171,7 @@ const Container = styled.div`
       bottom: 0;
       left: 130px;
       font-size: 14px;
-      color: #db4455;
+      color: var(--color-red);
     }
   }
   button {

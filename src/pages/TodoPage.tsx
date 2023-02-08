@@ -70,9 +70,11 @@ const TodoPage = () => {
         />
         <button data-testid="new-todo-add-button">추가</button>
       </form>
-      {todoList.map((todoItem) => {
-        return <TodoListItem key={todoItem.id} todoItem={todoItem} />;
-      })}
+      <TodoListContainer>
+        {todoList.map((todoItem) => {
+          return <TodoListItem key={todoItem.id} todoItem={todoItem} />;
+        })}
+      </TodoListContainer>
     </Container>
   );
 };
@@ -81,11 +83,12 @@ export default TodoPage;
 
 const Container = styled.div`
   background-color: var(--color-grey100);
-  height: calc(100vh - 46px);
+  min-height: calc(100vh - 46px);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 23px;
+  width: 100%;
   .todo-input {
     display: flex;
     align-items: center;
@@ -105,6 +108,11 @@ const Container = styled.div`
       cursor: pointer;
     }
   }
+`;
+
+const TodoListContainer = styled.ul`
+  width: 400px;
+  margin-top: 24px;
 `;
 
 const LoadingContainer = styled.div`
