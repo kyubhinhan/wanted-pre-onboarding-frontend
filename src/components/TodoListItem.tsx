@@ -47,6 +47,39 @@ const TodoListItem = ({ todoItem, setTodoList }: TodoListItemPropType) => {
     }
   };
 
+  // 수정 버튼이 클릭되었을 때, 수정 모드로 바꾸어줌
+  const handleFixButtonClick = () => {
+    setFixValue(originValue);
+    setFixMode(true);
+  };
+
+  // 수정 내용이 변할 때 바꾸어줌
+  const handleFixValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFixValue(e.target.value);
+  };
+
+  // 취소 버튼 클릭
+  const handleCancleButtonClick = () => {
+    // value 초기화
+    setFixValue(originValue);
+    // 모드 변경
+    setFixMode(false);
+  };
+
+  // 제출 버튼 클릭
+  const handleSubmitButtonClick = async () => {
+    try {
+      const { data } = await customAxios.put(`todos/${todoItem.id}`, {
+        todo: fixValue,
+        isCompleted: isCompleted,
+      });
+      setOriginValue(data.todo);
+      setFixMode(false);
+    } catch (error) {
+      window.alert(error);
+    }
+  };
+
   return (
     <Container>
       <input
@@ -60,7 +93,9 @@ const TodoListItem = ({ todoItem, setTodoList }: TodoListItemPropType) => {
           <span className="content-value" data-completed={isCompleted}>
             {originValue}
           </span>
-          <button data-testid="modify-button">수정</button>
+          <button data-testid="modify-button" onClick={handleFixButtonClick}>
+            수정
+          </button>
           <button
             data-testid="delete-button"
             className="delete"
@@ -76,9 +111,14 @@ const TodoListItem = ({ todoItem, setTodoList }: TodoListItemPropType) => {
             data-testid="modify-input"
             className="content-value"
             value={fixValue}
+            onChange={handleFixValueChange}
           />
-          <button data-testid="submit-button">제출</button>
-          <button data-testid="cancel-button">취소</button>
+          <button data-testid="submit-button" onClick={handleSubmitButtonClick}>
+            제출
+          </button>
+          <button data-testid="cancel-button" onClick={handleCancleButtonClick}>
+            취소
+          </button>
         </div>
       )}
     </Container>
@@ -105,6 +145,8 @@ const Container = styled.li`
       width: 100%;
       line-height: 120%;
       color: var(--color-purple200);
+      font-size: 12px;
+      padding-left: 0.5rem;
       &[data-completed='true'] {
         text-decoration: line-through;
       }
