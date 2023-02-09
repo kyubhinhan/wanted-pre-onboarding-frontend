@@ -2,6 +2,7 @@ import React from 'react';
 import { Reset } from 'styled-reset';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Outlet } from 'react-router-dom';
+import LogoutIcon from '../components/LogoutIcon';
 
 const LayoutPage = () => {
   return (
@@ -9,7 +10,10 @@ const LayoutPage = () => {
       <Reset />
       <GlobalStyle />
       <Container>
-        <header>My Todo List</header>
+        <header>
+          <h1>My Todo List</h1>
+          <LogoutIcon />
+        </header>
         <Outlet />
       </Container>
     </>
@@ -46,8 +50,13 @@ const Container = styled.div`
     padding: 0.5rem 1rem;
     background-color: var(--color-purple200);
     display: flex;
-    justify-content: center;
     color: var(--color-grey100);
+    align-items: center;
+    h1 {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
   }
 `;
 
