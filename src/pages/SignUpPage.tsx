@@ -65,6 +65,13 @@ const SignUpPage = () => {
     }
   }, [emailValue, passwordValue]);
 
+  // access token이 있을 경우 todo로 redirect 시켜줌
+  useEffect(() => {
+    if (localStorage.getItem('access_token')) {
+      navigate('/todo');
+    }
+  }, []);
+
   return (
     <Container>
       <form className="signup-container" onSubmit={handleSubmit}>
@@ -152,7 +159,7 @@ const Container = styled.div`
       bottom: 0;
       left: 130px;
       font-size: 14px;
-      color: #db4455;
+      color: var(--color-red);
     }
   }
   button {

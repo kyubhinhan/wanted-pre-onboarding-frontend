@@ -33,6 +33,7 @@ const GlobalStyle = createGlobalStyle`
     --color-purple200:#674188;
     --color-grey100:#FFFBF5;
     --color-grey200:#F7EFE5;
+    --color-red:#db4455;
     --font-size-large: 20px;
   }
 `;

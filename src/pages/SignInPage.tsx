@@ -1,19 +1,44 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignInPage = () => {
+  const [buttonDisabled, setButtonDisabled] = useState(true);
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
+  const [emailCheck, setEmailCheck] = useState('');
+  const [passwordCheck, setPasswordCheck] = useState('');
   const navigate = useNavigate();
 
   const handleEmailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmailValue(e.target.value);
+    if ((e.target.value as string).includes('@')) {
+      setEmailCheck('valid');
+    }
   };
 
   const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordValue(e.target.value);
+    if ((e.target.value as string).length >= 8) {
+      setPasswordCheck('valid');
+    }
+  };
+
+  const checkEmailValid = () => {
+    if (emailValue.includes('@')) {
+      setEmailCheck('valid');
+    } else {
+      setEmailCheck('invalid');
+    }
+  };
+
+  const checkPasswordValid = () => {
+    if (passwordValue.length >= 8) {
+      setPasswordCheck('valid');
+    } else {
+      setPasswordCheck('invalid');
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -25,23 +50,36 @@ const SignInPage = () => {
         password: passwordValue,
       })
       .then(({ data }) => {
-        // accessToken을 localStorage에 저장해줌
-        localStorage.setItem('accessToken', data['access_token']);
-        // todo 페이지로 redirect
+        localStorage.setItem('access_token', data['access_token']);
         navigate('/todo');
       })
       .catch((err) => {
         if (err.response.data.message === 'Unauthorized') {
-          window.alert('비밀번호가 일치하지 않습니다.');
+          window.alert('password가 일치하지 않습니다.');
         } else {
           window.alert(err.response.data.message);
         }
       });
   };
 
+  useEffect(() => {
+    if (emailValue.includes('@') && passwordValue.length >= 8) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [emailValue, passwordValue]);
+
+  // access token이 있을 경우 todo로 redirect 시켜줌
+  useEffect(() => {
+    if (localStorage.getItem('access_token')) {
+      navigate('/todo');
+    }
+  }, []);
+
   return (
     <Container>
-      <form className="signup-container" onSubmit={handleSubmit}>
+      <form className="signin-container" onSubmit={handleSubmit}>
         <section className="email">
           <label htmlFor="email-input">이메일</label>
           <input
@@ -49,7 +87,11 @@ const SignInPage = () => {
             id="email-input"
             value={emailValue}
             onChange={handleEmailInput}
+            onBlur={checkEmailValid}
           />
+          {emailCheck === 'invalid' && (
+            <p className="warnning">@ 포함한 이메일 형태로 작성해주세요</p>
+          )}
         </section>
         <section className="password">
           <label htmlFor="password-input">패스워드</label>
@@ -58,13 +100,23 @@ const SignInPage = () => {
             id="password-input"
             value={passwordValue}
             onChange={handlePasswordInput}
+            onBlur={checkPasswordValid}
             type={'password'}
           />
+          {passwordCheck === 'invalid' && (
+            <p className="warnning">8자리 이상의 비밀번호를 사용해주세요</p>
+          )}
         </section>
         <div className="signup-wrapper">
-          <Link to="/signup">아이디가 없습니까? 회원 가입하기</Link>
+          <Link to={'/signup'}>회원 가입</Link>
         </div>
-        <button data-testid="signin-button">로그인</button>
+        <button
+          data-testid="signin-button"
+          data-disabled={buttonDisabled}
+          disabled={buttonDisabled}
+        >
+          로그인
+        </button>
       </form>
     </Container>
   );
@@ -76,7 +128,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   padding-top: 46px;
-  .signup-container {
+  .signin-container {
     width: 500px;
     height: 290px;
     padding-top: 46px;
@@ -87,7 +139,8 @@ const Container = styled.div`
     flex-direction: column;
     position: relative;
     .signup-wrapper {
-      margin-top: 3px;
+      position: relative;
+      top: 5px;
     }
   }
   section {
@@ -113,19 +166,30 @@ const Container = styled.div`
       border-radius: 10px;
       color: var(--color-purple200);
     }
+    .warnning {
+      position: absolute;
+      bottom: 0;
+      left: 130px;
+      font-size: 14px;
+      color: var(--color-red);
+    }
   }
   button {
     position: absolute;
     bottom: 0px;
     width: 100%;
     height: 46px;
-    border: 1px solid var(--color-purple200);
+    border: 1px solid var(--color-purple100);
     border-radius: 20px;
-    background-color: var(--color-purple200);
+    background-color: var(--color-purple100);
     color: var(--color-grey100);
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
+    &[data-disabled='false'] {
+      background-color: var(--color-purple200);
+      border: 1px solid var(--color-purple200);
+    }
   }
 `;
 
