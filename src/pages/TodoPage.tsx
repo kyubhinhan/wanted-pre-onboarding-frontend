@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import customAxios from '../utils/customAxios';
 import TodoListItem from '../components/TodoListItem';
 import type { TodoItemType } from '../components/TodoListItem';
 
 const TodoPage = () => {
-  const navigate = useNavigate();
   const [todoList, setTodoList] = useState<TodoItemType[]>([]);
   const [todoInputValue, setTodoInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(true);
