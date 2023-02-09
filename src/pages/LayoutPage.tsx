@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Reset } from 'styled-reset';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Outlet } from 'react-router-dom';
 import LogoutIcon from '../components/LogoutIcon';
+import { useNavigate } from 'react-router-dom';
 
 const LayoutPage = () => {
+  const navigate = useNavigate();
+
+  // 처음에 메인 페이지로 왔을 때,
+  useEffect(() => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken || accessToken === '') {
+      // access token이 비어 있으면 signin으로 보냄
+      navigate('/signin');
+    } else {
+      // access token이 있으면 todo로 보냄
+      navigate('/todo');
+    }
+  }, []);
+
   return (
     <>
       <Reset />
