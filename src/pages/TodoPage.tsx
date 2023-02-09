@@ -63,7 +63,13 @@ const TodoPage = () => {
       </form>
       <TodoListContainer>
         {todoList.map((todoItem) => {
-          return <TodoListItem key={todoItem.id} todoItem={todoItem} />;
+          return (
+            <TodoListItem
+              key={todoItem.id}
+              todoItem={todoItem}
+              setTodoList={setTodoList}
+            />
+          );
         })}
       </TodoListContainer>
     </Container>

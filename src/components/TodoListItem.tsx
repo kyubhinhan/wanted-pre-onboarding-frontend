@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import customAxios from '../utils/customAxios';
 
-const TodoListItem = ({ todoItem }: TodoListItemPropType) => {
+const TodoListItem = ({ todoItem, setTodoList }: TodoListItemPropType) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [originValue, setOriginValue] = useState('');
   const [fixValue, setFixValue] = useState('');
@@ -27,6 +27,26 @@ const TodoListItem = ({ todoItem }: TodoListItemPropType) => {
     }
   };
 
+  // 삭제 버튼이 클릭되었을 때, 삭제를 해줌
+  const handleDeleteButtonClick = async () => {
+    try {
+      // 서버에 삭제 요청을 보냄
+      await customAxios.delete(`todos/${todoItem.id}`);
+      // 목록에서 삭제해줌
+      setTodoList((pre) => {
+        return pre.filter((todoElement) => {
+          if (todoElement.id === todoItem.id) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+      });
+    } catch (error) {
+      window.alert(error);
+    }
+  };
+
   return (
     <Container>
       <input
@@ -41,7 +61,11 @@ const TodoListItem = ({ todoItem }: TodoListItemPropType) => {
             {originValue}
           </span>
           <button data-testid="modify-button">수정</button>
-          <button data-testid="delete-button" className="delete">
+          <button
+            data-testid="delete-button"
+            className="delete"
+            onClick={handleDeleteButtonClick}
+          >
             삭제
           </button>
         </div>
@@ -113,6 +137,7 @@ interface TodoItemType {
 
 interface TodoListItemPropType {
   todoItem: TodoItemType;
+  setTodoList: React.Dispatch<React.SetStateAction<TodoItemType[]>>;
 }
 
 export type { TodoItemType };
