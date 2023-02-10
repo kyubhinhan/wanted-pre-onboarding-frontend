@@ -60,12 +60,13 @@ const TodoPage = () => {
         <button data-testid="new-todo-add-button">추가</button>
       </form>
       <TodoListContainer>
-        {todoList.map((todoItem) => {
+        {todoList.map((todoItem, index) => {
           return (
             <TodoListItem
               key={todoItem.id}
               todoItem={todoItem}
               setTodoList={setTodoList}
+              index={index}
             />
           );
         })}

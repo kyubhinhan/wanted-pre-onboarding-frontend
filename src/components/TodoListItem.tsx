@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import customAxios from '../utils/customAxios';
 
-const TodoListItem = ({ todoItem, setTodoList }: TodoListItemPropType) => {
+const TodoListItem = ({
+  todoItem,
+  setTodoList,
+  index,
+}: TodoListItemPropType) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [originValue, setOriginValue] = useState('');
   const [fixValue, setFixValue] = useState('');
   const [fixMode, setFixMode] = useState(false);
+  const [dragState, setDragState] = useState('');
+  const containerRef = useRef<HTMLLIElement>(null);
 
   // 넘어온 값으로 초기화
   useEffect(() => {
@@ -80,8 +86,46 @@ const TodoListItem = ({ todoItem, setTodoList }: TodoListItemPropType) => {
     }
   };
 
+  // drag start
+  const handleDragStart = (e: React.DragEvent<HTMLLIElement>) => {
+    e.dataTransfer.setData(`${index}`, `${index}`);
+  };
+
+  // drag enter
+  const handleDragEnter = (e: React.DragEvent<HTMLLIElement>) => {
+    // 자기 자신인 경우 바로 빠져나옴으로써 예외처리 해줌
+    const startIndex = Number(e.dataTransfer.types[0]);
+    if (startIndex === index) return;
+
+    if (containerRef.current) {
+      const criterionY =
+        containerRef.current.offsetTop + containerRef.current.offsetHeight / 2;
+
+      // 만약 드래그된 물체가 기준 y보다 아래로 내려올 경우(그 물체를 위로 올려줌)
+      if (e.clientY > criterionY) {
+        setDragState('moveUp');
+      }
+      // 만약 드래그된 물체가 기준 y보다 위로 올라올 경우(그 물체를 아래로 내려줌)
+      if (e.clientY < criterionY) {
+        setDragState('moveDown');
+      }
+    }
+  };
+
+  // drag end
+  const handleDragEnd = () => {
+    console.log(`drag end ${index}`);
+  };
+
   return (
-    <Container>
+    <Container
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnter={handleDragEnter}
+      onDragEnd={handleDragEnd}
+      data-dragstate={dragState}
+      ref={containerRef}
+    >
       <input
         type="checkbox"
         checked={isCompleted}
@@ -129,13 +173,22 @@ export default TodoListItem;
 
 const Container = styled.li`
   width: 100%;
+  height: 45px;
   padding: 0.5rem;
+  background-color: var(--color-grey100);
   border: 1px solid var(--color-purple200);
   border-radius: 5px;
   margin-bottom: 10px;
   font-size: 14px;
   display: flex;
   align-items: center;
+  cursor: move;
+  &[data-dragstate='moveDown'] {
+    transform: translate(0, 55px);
+  }
+  &[data-dragstate='moveUp'] {
+    transform: translate(0, -55px);
+  }
   .content-wrapper {
     width: 100%;
     display: flex;
@@ -180,6 +233,7 @@ interface TodoItemType {
 interface TodoListItemPropType {
   todoItem: TodoItemType;
   setTodoList: React.Dispatch<React.SetStateAction<TodoItemType[]>>;
+  index: number;
 }
 
 export type { TodoItemType };
