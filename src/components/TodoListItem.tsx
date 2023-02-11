@@ -7,6 +7,10 @@ const TodoListItem = ({
   setTodoList,
   index,
   direction,
+  setEnterTarget,
+  enterTarget,
+  setStartIndex,
+  dragEnd,
 }: TodoListItemPropType) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [originValue, setOriginValue] = useState('');
@@ -20,6 +24,13 @@ const TodoListItem = ({
     setIsCompleted(todoItem.isCompleted);
     setOriginValue(todoItem.todo);
   }, []);
+
+  // drag가 끝났을 때 값 초기화해줌
+  useEffect(() => {
+    if (dragEnd === 'end') {
+      setDragState('');
+    }
+  }, [dragEnd]);
 
   // 완료 버튼이 클릭되었을 때, 처리를 해줌
   const handleCompleteButtonClick = async () => {
@@ -90,14 +101,19 @@ const TodoListItem = ({
   // drag start
   const handleDragStart = (e: React.DragEvent<HTMLLIElement>) => {
     e.dataTransfer.setData(`${index}`, `${index}`);
+    setStartIndex(index);
   };
 
   // drag enter
   const handleDragEnter = (e: React.DragEvent<HTMLLIElement>) => {
+    // enter target 갱신
+    if (enterTarget !== index) {
+      setEnterTarget(index);
+    }
     // 자기 자신인 경우 바로 빠져나옴으로써 예외처리 해줌
     const startIndex = Number(e.dataTransfer.types[0]);
     if (startIndex === index) return;
-
+    // 위 아래로 움직여줌
     if (containerRef.current) {
       const containerTopY = containerRef.current.offsetTop;
       const containerBottomY =
@@ -122,17 +138,11 @@ const TodoListItem = ({
     }
   };
 
-  // drag end
-  const handleDragEnd = () => {
-    console.log(`drag end ${index}`);
-  };
-
   return (
     <Container
       draggable
       onDragStart={handleDragStart}
       onDragEnter={handleDragEnter}
-      onDragEnd={handleDragEnd}
       data-dragstate={dragState}
       ref={containerRef}
     >
@@ -245,6 +255,10 @@ interface TodoListItemPropType {
   setTodoList: React.Dispatch<React.SetStateAction<TodoItemType[]>>;
   index: number;
   direction: string;
+  setEnterTarget: React.Dispatch<React.SetStateAction<number>>;
+  enterTarget: number;
+  setStartIndex: React.Dispatch<React.SetStateAction<number>>;
+  dragEnd: string;
 }
 
 export type { TodoItemType };

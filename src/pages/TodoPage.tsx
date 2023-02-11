@@ -10,6 +10,9 @@ const TodoPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [preY, setPreY] = useState(0);
   const [direction, setDirection] = useState('');
+  const [enterTarget, setEnterTarget] = useState(-1);
+  const [startIndex, setStartIndex] = useState(-1);
+  const [dragEnd, setDragEnd] = useState('');
 
   // 처음 마운트 될 때 서버에 조회해서 데이터를 채워줌
   // 만약 에러가 났고 그 이유가 token 값이 없거나 잘못된 거이면(401)
@@ -49,6 +52,11 @@ const TodoPage = () => {
   const handleDragOver = (e: React.DragEvent<HTMLUListElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+
+    if (dragEnd !== '') {
+      setDragEnd('');
+    }
+
     if (Math.abs(preY - e.clientY) > 5) {
       if (preY > e.clientY) {
         if (direction !== 'up') {
@@ -60,6 +68,17 @@ const TodoPage = () => {
         }
       }
       setPreY(e.clientY);
+    }
+  };
+
+  // drag 끝났을 때,
+  const handleDragEnd = () => {
+    if (startIndex !== enterTarget) {
+      const newList = [...todoList];
+      const dragStartElement = newList.splice(startIndex, 1)[0];
+      newList.splice(enterTarget, 0, dragStartElement);
+      setTodoList(newList);
+      setDragEnd('end');
     }
   };
 
@@ -78,7 +97,7 @@ const TodoPage = () => {
         />
         <button data-testid="new-todo-add-button">추가</button>
       </form>
-      <TodoListContainer onDragOver={handleDragOver}>
+      <TodoListContainer onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
         {todoList.map((todoItem, index) => {
           return (
             <TodoListItem
@@ -87,6 +106,10 @@ const TodoPage = () => {
               setTodoList={setTodoList}
               index={index}
               direction={direction}
+              setEnterTarget={setEnterTarget}
+              setStartIndex={setStartIndex}
+              enterTarget={enterTarget}
+              dragEnd={dragEnd}
             />
           );
         })}

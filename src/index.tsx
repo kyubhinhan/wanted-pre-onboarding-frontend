@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement,
+);
 const LayoutPage = lazy(() => import('./pages/LayoutPage'));
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 const SignUpPage = lazy(() => import('./pages/SignUpPage'));
@@ -33,11 +35,9 @@ const router = createBrowserRouter([
 ]);
 
 root.render(
-  <React.StrictMode>
-    <Suspense fallback={<div>Loading...</div>}>
-      <RouterProvider router={router} />
-    </Suspense>
-  </React.StrictMode>,
+  <Suspense fallback={<div>Loading...</div>}>
+    <RouterProvider router={router} />
+  </Suspense>,
 );
 
 // If you want to start measuring performance in your app, pass a function
