@@ -8,6 +8,8 @@ const TodoPage = () => {
   const [todoList, setTodoList] = useState<TodoItemType[]>([]);
   const [todoInputValue, setTodoInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [preY, setPreY] = useState(0);
+  const [direction, setDirection] = useState('');
 
   // 처음 마운트 될 때 서버에 조회해서 데이터를 채워줌
   // 만약 에러가 났고 그 이유가 token 값이 없거나 잘못된 거이면(401)
@@ -44,6 +46,23 @@ const TodoPage = () => {
     }
   };
 
+  const handleDragOver = (e: React.DragEvent<HTMLUListElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (Math.abs(preY - e.clientY) > 5) {
+      if (preY > e.clientY) {
+        if (direction !== 'up') {
+          setDirection('up');
+        }
+      } else {
+        if (direction !== 'down') {
+          setDirection('down');
+        }
+      }
+      setPreY(e.clientY);
+    }
+  };
+
   // loading 중일 때(서버로부터 데이터를 받고 있을 때)
   if (isLoading) {
     return <LoadingContainer>loading...</LoadingContainer>;
@@ -59,7 +78,7 @@ const TodoPage = () => {
         />
         <button data-testid="new-todo-add-button">추가</button>
       </form>
-      <TodoListContainer>
+      <TodoListContainer onDragOver={handleDragOver}>
         {todoList.map((todoItem, index) => {
           return (
             <TodoListItem
@@ -67,6 +86,7 @@ const TodoPage = () => {
               todoItem={todoItem}
               setTodoList={setTodoList}
               index={index}
+              direction={direction}
             />
           );
         })}

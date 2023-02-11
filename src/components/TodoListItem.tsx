@@ -6,6 +6,7 @@ const TodoListItem = ({
   todoItem,
   setTodoList,
   index,
+  direction,
 }: TodoListItemPropType) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [originValue, setOriginValue] = useState('');
@@ -98,16 +99,25 @@ const TodoListItem = ({
     if (startIndex === index) return;
 
     if (containerRef.current) {
-      const criterionY =
-        containerRef.current.offsetTop + containerRef.current.offsetHeight / 2;
+      const containerTopY = containerRef.current.offsetTop;
+      const containerBottomY =
+        containerRef.current.offsetTop + containerRef.current.offsetHeight;
 
       // 만약 드래그된 물체가 기준 y보다 아래로 내려올 경우(그 물체를 위로 올려줌)
-      if (e.clientY > criterionY) {
-        setDragState('moveUp');
+      if (direction === 'down' && e.clientY > containerTopY) {
+        if (dragState === '') {
+          setDragState('moveUp');
+        } else {
+          setDragState('');
+        }
       }
       // 만약 드래그된 물체가 기준 y보다 위로 올라올 경우(그 물체를 아래로 내려줌)
-      if (e.clientY < criterionY) {
-        setDragState('moveDown');
+      if (direction === 'up' && e.clientY < containerBottomY) {
+        if (dragState === '') {
+          setDragState('moveDown');
+        } else {
+          setDragState('');
+        }
       }
     }
   };
@@ -234,6 +244,7 @@ interface TodoListItemPropType {
   todoItem: TodoItemType;
   setTodoList: React.Dispatch<React.SetStateAction<TodoItemType[]>>;
   index: number;
+  direction: string;
 }
 
 export type { TodoItemType };
